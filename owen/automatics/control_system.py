@@ -100,6 +100,10 @@ class LoopSystem(VGroup):
 		return self.comparator.get_center() + 0.5 * self.comparator_diamater
 
 
+class IntroductionToControl(Scene):
+	pass
+
+
 class OpenLoop(Scene):
 	CONFIG = {
 		"loopsystem_config": {
@@ -140,6 +144,7 @@ class LaplaceTransform(Scene):
 	pass
 	# and i think there might be a video in WIP somewhere
 	# on github, need to get a look to this
+	# address the issue where we are in discrte space -> Z-Transform
 
 
 class WhyLPTransform(PiCreatureScene):
@@ -234,7 +239,7 @@ class IntroduceRootLocus(Scene):
 		self.add(background_plane, coordinate_labels)
 		self.background_plane = background_plane
 		self.coordinate_labels = coordinate_labels
-
+	pass
 
 class GainControl(Scene):
 	pass
