@@ -102,6 +102,27 @@ class LoopSystem(VGroup):
 
 class IntroductionToControl(Scene):
 	pass
+	# Teacher Studetn Scene with a let's say a drone moving
+	# left / right to go to the middle
+	# dial:
+	# How can i do that ??
+	# Easy: Control System
+	# What is control system.. ~ ponder ~
+	# change scene
+
+
+class EquationOfTheSystem(Scene):
+	def construct(self):
+		equation1 = TexMobject("x = 0")
+		equation2 = TexMobject("\\dot{x} = 0")
+		equation_group = VGroup(equation1, equation2).arrange(DOWN)
+
+		simplify_eq = TexMobject("something")
+
+		self.play(Write(equation_group))
+		self.wait(5)
+		self.play(Transform(equation_group, simplify_eq))
+		self.wait()
 
 
 class OpenLoop(Scene):
@@ -149,6 +170,11 @@ class LaplaceTransform(Scene):
 
 class WhyLPTransform(PiCreatureScene):
 	pass
+	# Teacher: well it is easier to solve, whem we go in phase domaine
+	# Student: Awh
+	# Teacher: but thats is for continous system, for discret ~ shows
+	# equation ~ we use Z-Transfomr ~ eq moves to the LEFT to show
+	# fromula
 
 
 class TransferFunctions(Scene):
@@ -176,19 +202,17 @@ class TransferFunctions(Scene):
 		self.wait()
 
 
-class SISO_MIMO(Scene):
+class AboutRootAndZero(Scene):
 	pass
-	# might need to change the Parent of this class 
-	# Scene could not be the most easier choice
 
 
 class IntroduceRootLocus(Scene):
 	CONFIG = {
-		"initial_unit_size" : 0.4,
-		"final_unit_size" : 0.1,
-		"plane_center" : 3*LEFT + 2*DOWN,
-		"x_label_range" : list(range(-12, 24, 4)),
-		"y_label_range" : list(range(-4, 24, 4)),
+		"initial_unit_size" : 1,
+		"final_unit_size" : 1,
+		"plane_center" : 1 * RIGHT,
+		"x_label_range" : list(range(-8, 6, 2)),
+		"y_label_range" : list(range(-3, 4, 2)),
 		"dot_color" : YELLOW,
 		"square_color" : MAROON_B,
 		"big_dot_radius" : 0.075,
@@ -239,7 +263,7 @@ class IntroduceRootLocus(Scene):
 		self.add(background_plane, coordinate_labels)
 		self.background_plane = background_plane
 		self.coordinate_labels = coordinate_labels
-	pass
+
 
 class GainControl(Scene):
 	pass
@@ -247,3 +271,13 @@ class GainControl(Scene):
 
 class PIDControl(Scene):
 	pass
+
+
+class SISO_MIMO(Scene):
+	pass
+	# might need to change the Parent of this class 
+	# Scene could not be the most easier choice
+	# PiCreatureScence:
+	# What if i have multiple variable? ~ students
+	# Well you'll use Matrix notation for that..
+	#For instance, insert transfer function of inv_pend?

@@ -1,5 +1,7 @@
 from manimlib.imports import *
 from from_3b1b.active.diffyq.part1.shared_constructs import *
+# from from_3b1b.active.diffyq.part1.pendulum import Pendulum
+import matplotlib.pyplot as plt
 
 
 class InvertedPendulumCart(VGroup):
@@ -242,6 +244,25 @@ class InvertedPendulumCart(VGroup):
         for x in range(nspf):
             d_theta = omega * dt / nspf
             d_position = speed * dt / nspf
+            # d_speed = self.force / (self.cart_mass + self.weight_mass) * dt / nspf
+
+            # d_omega = op.add(
+            #     -self.damping * omega,
+            #     -(self.gravity / self.length) * np.sin(theta),
+            # ) * dt / nspf
+
+            # d_omega = op.add(
+            #     -(self.weight_mass / self.moment_of_inertia * self.gravity * self.length * np.sin(theta)),
+            #     -(self.length / self.moment_of_inertia * np.cos(theta))
+            # ) * dt / nspf 
+
+            # d_speed = op.truediv(
+            #     (op.add(
+            #         ((self.moment_of_inertia + self.weight_mass * self.length**2) * d_omega),
+            #         (self.weight_mass * self.gravity * np.sin(theta))
+            #     )),
+            #     (- self.weight_mass * self.length * np.cos(theta))
+            # ) * dt / nspf
             d_speed = op.truediv(
                 (op.add(
                     op.add(
