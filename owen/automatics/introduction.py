@@ -66,13 +66,7 @@ class IntroductionToControl(TeacherStudentsScene):
 			target_mode="speaking"
 		)
 		self.wait()
-	# Teacher Studetn Scene with a let's say a drone moving
-	# left / right to go to the middle
-	# dial:
-	# How can i do that ??
-	# Easy: Control System
-	# What is control system.. ~ ponder ~
-	# change scene
+
 
 class SomeOfYouWatching(TeacherStudentsScene):
 

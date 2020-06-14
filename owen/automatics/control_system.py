@@ -251,65 +251,6 @@ class AboutRootAndZero(Scene):
 	pass
 
 
-class IntroduceRootLocus(Scene):
-	CONFIG = {
-		"initial_unit_size" : 1,
-		"final_unit_size" : 1,
-		"plane_center" : 1 * RIGHT,
-		"x_label_range" : list(range(-8, 6, 2)),
-		"y_label_range" : list(range(-3, 4, 2)),
-		"dot_color" : YELLOW,
-		"square_color" : MAROON_B,
-		"big_dot_radius" : 0.075,
-		"dot_radius" : 0.05,
-	}
-	
-	def construct(self):
-		self.add_plane()
-		self.wait(5)
-
-	def add_plane(self):
-		width = (FRAME_X_RADIUS+abs(self.plane_center[0]))/self.final_unit_size
-		height = (FRAME_Y_RADIUS+abs(self.plane_center[1]))/self.final_unit_size
-		background_plane = ComplexPlane(
-			x_radius = width,
-			y_radius = height,
-			stroke_width = 2,
-			stroke_color = BLUE_E,
-			secondary_line_ratio = 0,
-		)
-		background_plane.axes.set_stroke(width = 4)
-
-		background_plane.scale(self.initial_unit_size)
-		background_plane.shift(self.plane_center)
-
-		coordinate_labels = VGroup()
-		z_list = np.append(
-			self.x_label_range,
-			complex(0, 1)*np.array(self.y_label_range)
-		)
-		for z in z_list:
-			if z == 0:
-				continue
-			if z.imag == 0:
-				tex = str(int(z.real))
-			else:
-				tex = str(int(z.imag)) + "i"
-			label = TexMobject(tex)
-			label.scale(0.75)
-			label.add_background_rectangle()
-			point = background_plane.number_to_point(z)
-			if z.imag == 0:
-				label.next_to(point, DOWN, SMALL_BUFF)
-			else:
-				label.next_to(point, LEFT, SMALL_BUFF)
-			coordinate_labels.add(label)
-
-		self.add(background_plane, coordinate_labels)
-		self.background_plane = background_plane
-		self.coordinate_labels = coordinate_labels
-
-
 class GainControl(Scene):
 	pass
 
