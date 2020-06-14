@@ -13,61 +13,110 @@ class LoopSystem(VGroup):
 		"box_height": 1,
 		"labels_on_box": False,
 		"comparator_diamater": 1.5,
+		"top_point": 6 * LEFT + 2 * UP
 	}
+
+	# TODO: Need to position links more efficiently by get their length
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.create_fixed_point()
 		self.create_input_line()
-		self.create_controller()
-		self.create_plant()
-		self.create_link_CP()
-		self.create_output_line()
 		if self.close:
 			self.create_comparator()
 			self.add_comparator_labels()
-			# self.create_comparator_line()
+			self.create_link_CC()
+
+
 			if self.pid:
 				self.create_feedback_loop()
 				self.create_pid()
+		self.create_controller()
+		self.create_link_CP()
+		self.create_plant()
+		self.create_output_line()
+		if self.close:
+			self.add_feedback_line_in()
+			self.create_sensor()
+			if self.pid:
+				pass
+			else:
+				self.create_feedback_line_out()
+		
 		if self.labels_on_box:
 			self.add_labels()
 
 	def create_fixed_point(self):
-		self.fixed_point_tracker = VectorizedPoint(ORIGIN)
+		self.fixed_point_tracker = VectorizedPoint(self.top_point)
 		self.add(self.fixed_point_tracker)
 		return self
 	
 	def create_input_line(self):
 		input_line = self.input_line = Arrow(LEFT, RIGHT)
-		input_line.move_to(20 * LEFT)
+		input_line.move_to(self.get_fixed_point())
 		self.add(input_line)
+
+	def create_link_CC(self):
+		link_CC = self.link_CC = Arrow(LEFT, RIGHT)
+		link_CC.move_to(self.get_edge_controller(1, RIGHT))
+		self.add(link_CC)
 
 	def create_controller(self):
 		controller = self.controller = Rectangle()
 		controller.set_width(self.box_width)
 		controller.set_height(self.box_height)
 		# controller.set_style(**self.controller_style)
-		self.move_to(3 * LEFT)
+		controller.move_to(self.link_CC.get_end() + (0.5 * self.box_width) * RIGHT)
 		self.add(controller)
+
+	def create_link_CP(self):
+		link = self.link = Arrow(LEFT, RIGHT)
+		link.move_to(self.controller.get_center() + (0.88 * self.box_width) * RIGHT)
+		self.add(link)
 
 	def create_plant(self):
 		plant = self.plant = Rectangle()
 		plant.set_width(self.box_width)
 		plant.set_height(self.box_height)
 		# plant.set_style(**self.controller_style)
-		self.move_to(3 * RIGHT)
+		plant.move_to(self.link.get_end() + (0.5 * self.box_width) * RIGHT)
 		self.add(plant)
-
-	def create_link_CP(self):
-		link = self.link = Arrow(LEFT, RIGHT)
-		link.move_to(LEFT)
-		self.add(link)
 
 	def create_output_line(self):
 		output_line = self.output_line = Arrow(LEFT, RIGHT)
-		output_line.move_to(5 * RIGHT)
+		output_line.set_length(3)
+		output_line.move_to(self.plant.get_center() + (1.25 * self.box_width) * RIGHT)
 		self.add(output_line)
+
+	def add_feedback_line_in(self):
+		splitter = Dot(self.output_line.get_center())
+		line1 = Line(UP, DOWN)
+		line1.stroke_width = 6
+		line1.set_length(3)
+		line1.move_to(self.output_line.get_center() + 1.5 * DOWN)
+		line2 = self.fb_in_line2 = Arrow(RIGHT, LEFT)
+		line2.set_length(3)
+		line2.move_to(line1.get_end() + 1.5 * LEFT)
+		fb_in_lines = self.fb_in_lines = VGroup(line1, line2)
+		self.add(splitter, fb_in_lines)
+
+	def create_sensor(self):
+		sensor = self.sensor = Rectangle()
+		sensor.set_width(self.box_width)
+		sensor.set_height(self.box_height)
+		# plant.set_style(**self.controller_style)
+		sensor.move_to(self.fb_in_line2.get_end() + (0.5 * self.box_width) * LEFT)
+		self.add(sensor)
+
+	def create_feedback_line_out(self):
+		line2_out = Arrow(DOWN, UP)
+		line2_out.set_length(2.25)
+		line2_out.move_to(self.get_edge_controller((0.5 + 2.25 / 3), DOWN))
+		line1_out = Line(RIGHT, LEFT)
+		line1_out.stroke_width = 6
+		line1_out.set_length(abs(line2_out.get_start() - (self.sensor.get_center() - 0.5 * self.box_width)))
+		line1_out.move_to(line2_out.get_start() +  (0.5 * line1_out.get_length()) * RIGHT)
+		self.add(line2_out, line1_out)
 
 	def create_comparator(self):
 		comparator = self.comparator = Circle()
@@ -96,32 +145,28 @@ class LoopSystem(VGroup):
 	def get_fixed_point(self):
 		return self.fixed_point_tracker.get_location()
 
-	def get_edge_controller(self):
-		return self.comparator.get_center() + 0.5 * self.comparator_diamater
-
-
-class IntroductionToControl(Scene):
-	pass
-	# Teacher Studetn Scene with a let's say a drone moving
-	# left / right to go to the middle
-	# dial:
-	# How can i do that ??
-	# Easy: Control System
-	# What is control system.. ~ ponder ~
-	# change scene
+	def get_edge_controller(self, distance, direction):
+		return self.comparator.get_center() + distance * self.comparator_diamater * direction
 
 
 class EquationOfTheSystem(Scene):
 	def construct(self):
-		equation1 = TexMobject("x = 0")
-		equation2 = TexMobject("\\dot{x} = 0")
-		equation_group = VGroup(equation1, equation2).arrange(DOWN)
-
-		simplify_eq = TexMobject("something")
-
-		self.play(Write(equation_group))
-		self.wait(5)
-		self.play(Transform(equation_group, simplify_eq))
+		eq = TexMobject("\\ddot{y}(t) + 3\\dot{y}(t) + 2y(t) = 3e(t)")
+		transform_eq = TexMobject("\\ddot{y}(t) + 3\\dot{y}(t) + 2y(t) = 3e(t)")
+		transform_eq = transform_eq.to_edge(UP)
+		LT_eq = TexMobject("s^2Y(s)+3sY(s)+2Y(s)=3E(s)")
+		open_eq = TexMobject("G(s)=\\frac{Y(s)}{E(s)}=\\frac{3}{s^2+3s+2}")
+		self.play(Write(eq, run_time=2))
+		self.wait(3)
+		self.play(
+			Transform(eq, LT_eq, run_time=1),
+			# LaggedStart(Write(LT_eq, run_time=2))
+		)
+		self.wait(3)
+		self.play(
+			Transform(eq, open_eq, run_time=1),
+			# LaggedStart(Write(LT_eq, run_time=2))
+		)
 		self.wait()
 
 
