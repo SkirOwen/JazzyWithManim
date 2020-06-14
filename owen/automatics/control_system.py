@@ -149,6 +149,150 @@ class LoopSystem(VGroup):
 		return self.comparator.get_center() + distance * self.comparator_diamater * direction
 
 
+class RLCCircuit(VGroup):
+	CONFIG = {
+		"generator_diameter": 1,
+		"generator_style": {
+			"stroke_color": WHITE,
+		},
+		"resistance_style": {
+			"stroke_color": WHITE,
+		},
+	}
+
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self.create_generator()
+		self.create_gen_res()
+		self.create_resistance()
+		self.create_res_coil()
+		self.create_coil()
+		self.create_c_gen()
+		self.create_cap_circuit()
+		self.create_capacitor()
+		self.add_labels()
+
+	def create_generator(self):
+		generator = self.generator = Circle()
+		generator.set_width(self.generator_diameter)
+		generator.scale(2)
+		generator.set_style(**self.generator_style)
+		generator.move_to(3.5 * LEFT)
+		sine1 = Arc(0, PI)
+		sine1.set_width(0.75)
+		sine1.move_to(self.generator.get_center() + 0.75 / 2 * LEFT + 0.75 / 4 * UP)
+		sine2 = Arc(0, -PI)
+		sine2.set_width(0.75)
+		sine2.move_to(self.generator.get_center() + 0.75 / 2 * RIGHT + 0.75 / 4 * DOWN)
+		sine_wave = VGroup(sine1, sine2)
+		self.add(generator, sine_wave)
+
+	def create_gen_res(self):
+		line1_in = self.line1_in = Line(DOWN, UP)
+		line1_in.set_length(1)
+		line1_in.move_to(self.generator.get_center() + 1.5 * UP)
+		line2_in = self.line2_in = Line(LEFT, RIGHT)
+		line2_in.set_length(1.5)
+		line2_in.move_to(line1_in.get_end() + 0.75 * RIGHT)
+		self.add(line1_in, line2_in)
+
+	def create_resistance(self):
+		resistance = self.resistance = Rectangle()
+		resistance.set_height(0.75)
+		resistance.set_width(1.5)
+		resistance.set_style(**self.resistance_style)
+		resistance.move_to(self.line2_in.get_end() + 0.75 * RIGHT)
+		self.add(resistance)
+
+	def create_res_coil(self):
+		line1_coil = self.line1_coil = Line(LEFT, RIGHT)
+		line1_coil.set_length(3.5)
+		line1_coil.move_to(self.resistance.get_center() + 2.5 * RIGHT)
+		line2_coil = self.line2_coil = Line(UP, DOWN)
+		line2_coil.set_length(1)
+		line2_coil.move_to(line1_coil.get_end() + 0.5 * DOWN)
+		self.add(line1_coil, line2_coil)
+
+	def create_coil(self):
+		coil1 = Arc(PI / 2, -PI)
+		coil1.set_width(0.2)
+		coil1.move_to(self.line2_coil.get_end() + 0.2 * DOWN + 0.1 * RIGHT)
+		coil2 = Arc(PI / 2, -PI)
+		coil2.set_width(0.2)
+		coil2.move_to(coil1.get_end() + 0.2 * DOWN + 0.1 * RIGHT)
+		coil3 = Arc(PI / 2, -PI)
+		coil3.set_width(0.2)
+		coil3.move_to(coil2.get_end() + 0.2 * DOWN + 0.1 * RIGHT)
+		coil4 = Arc(PI / 2, -PI)
+		coil4.set_width(0.2)
+		coil4.move_to(coil3.get_end() + 0.2 * DOWN + 0.1 * RIGHT)
+		coil5 = self.coil_out = Arc(PI / 2, -PI)
+		coil5.set_width(0.2)
+		coil5.move_to(coil4.get_end() + 0.2 * DOWN + 0.1 * RIGHT)
+		coil = VGroup(coil1, coil2, coil3, coil4, coil5)
+		self.add(coil)
+
+	def create_c_gen(self):
+		line1 = Line(UP, DOWN)
+		line1.set_length(1)
+		line1.move_to(self.coil_out.get_end() + 0.5 * DOWN)
+		line2 = Line(DOWN, UP)
+		line2.set_length(1)
+		line2.move_to(self.generator.get_center() + 1.5 * DOWN)
+		line3 = self.line_to_gen =  Line(RIGHT, LEFT)
+		line3.set_length(abs(line2.get_start() - line1.get_end()))
+		line3.move_to(line1.get_end() + 0.5 * line3.get_length() * LEFT)
+		line_out = VGroup(line1, line2, line3)
+		self.add(line_out)
+
+
+	def create_cap_circuit(self):
+		dot1 = Dot(self.line_to_gen.get_center() + RIGHT)
+		dot2 = Dot(self.line_to_gen.get_center() * np.array([1,-1,1]) + RIGHT)
+		line1 = self.line_out_cap = Line(DOWN, UP)
+		line1.set_length(1.8)
+		line1.move_to(dot1.get_center() + 0.9 * UP)
+		line2 = self.line_in_cap = Line(UP, DOWN)
+		line2.set_length(1.8)
+		line2.move_to(dot2.get_center() + 0.9 * DOWN)
+
+		self.add(dot1, dot2, line1, line2)
+
+	def create_capacitor(self):
+		top = Line(LEFT, RIGHT)
+		top.set_length(1)
+		top.move_to(self.line_in_cap.get_end())
+		bottom = Line(LEFT, RIGHT)
+		bottom.set_length(1)
+		bottom.move_to(self.line_out_cap.get_end())
+		self.add(top, bottom)
+
+	def add_labels(self):
+		r_label = TextMobject("R")
+		r_label.move_to(self.resistance.get_center() + 0.7 * DOWN)
+		l_label = TextMobject("L")
+		l_label.move_to(3.5 * RIGHT)
+		c_label = TextMobject("C")
+		c_label.move_to(ORIGIN)
+
+		vi_arrow = Arrow(DOWN, UP)
+		vi_label = TexMobject("V_{i}")
+		vi_arrow.set_length(4)
+		vi_arrow.move_to(5 * LEFT)
+		vi_label.move_to(vi_arrow.get_center() + 0.5 * LEFT)
+		vo_arrow = Arrow(DOWN, UP)
+		vo_label = TexMobject("V_{0} = \\dot{x}")
+		vo_arrow.set_length(4)
+		vo_arrow.move_to(4 * RIGHT)
+		vo_label.move_to(vo_arrow.get_center() + 1 * RIGHT)
+		self.add(
+			r_label, c_label, l_label,
+			vi_arrow, vi_label,
+			vo_arrow, vo_label
+		)
+
+
+
 class EquationOfTheSystem(Scene):
 	def construct(self):
 		eq = TexMobject("\\ddot{y}(t) + 3\\dot{y}(t) + 2y(t) = 3e(t)")
@@ -204,6 +348,44 @@ class ClosedLoop(Scene):
 		# 	Write(system)
 		# )
 		self.wait(5)
+
+
+class RLCfilter(Scene):
+	CONFIG = {
+		"RLC_config": {
+			"generator_diameter": 1,
+		}
+	}
+	def construct(self):
+		title = TextMobject("RLC Filter")
+		title.to_corner(UP + LEFT)
+		
+
+		RLC_circuit = RLCCircuit(**self.RLC_config)
+
+		eq = TexMobject(
+			"V_{i} = \\dot{x} + RC\\ddot{x} + \\frac{R}{L}x"
+		)
+
+		LT = TexMobject(
+			"V_{i}(s) = RC^2X(s)+sX(s)+\\frac{R}{L}X(s)"
+		)
+		
+		tf = TexMobject(
+			"\\frac{X(s)}{V_{i}(s)} = \\frac{1}{RCs^2+s+\\frac{R}{L}}"
+		)
+
+		self.play(
+			FadeInFrom(title, LEFT),
+			Write(RLC_circuit, run_time=2)
+		)
+		self.wait(1)
+		self.play(Transform(RLC_circuit, eq))
+		self.wait(1.5)
+		self.play(Transform(RLC_circuit, LT))
+		self.wait(1.5)
+		self.play(Transform(RLC_circuit, tf))
+		self.wait()
 
 
 class LaplaceTransform(Scene):
