@@ -1,6 +1,7 @@
 from manimlib.imports import *
-from active_projects.diffyq.part1.shared_constructs import *
-from active_projects.diffyq.part1.pendulum import Pendulum
+from from_3b1b.active.diffyq.part1.shared_constructs import *
+from from_3b1b.active.diffyq.part1.pendulum import Pendulum
+from owen.automatics.inverted_pendulum import InvertedPendulumCart
 
 
 # TODO: Arguably separate the part showing many
@@ -46,8 +47,8 @@ class VisualizeStates(Scene):
             "angle_arc_config": {
                 "radius": 0.5,
             },
-            "initial_theta": 80 * DEGREES,
-            "omega": -1,
+            # "initial_theta": 80 * DEGREES,
+            # "omega": -1,
             "set_theta_label_height_cap": True,
         },
         "n_thetas": 11,
@@ -89,7 +90,7 @@ class VisualizeStates(Scene):
                     fill_color=DARKER_GREY,
                     fill_opacity=1,
                 )
-                pendulum = Pendulum(
+                pendulum = InvertedPendulumCart(
                     initial_theta=theta,
                     omega=omega,
                     top_point=rect.get_center(),
@@ -1122,7 +1123,7 @@ class TweakMuInVectorField(ShowPendulumPhaseFlow):
         plane = self.plane
         self.add(plane)
 
-        mu_tracker = ValueTracker(0.1)
+        mu_tracker = ValueTracker(0.9)
         get_mu = mu_tracker.get_value
 
         def vector_field_func(p):

@@ -11,8 +11,8 @@ class InvertedPendulumCart(VGroup):
         "weight_diameter": 0.5,
         "cart_width": 2,
         "cart_height": 1,
-        "initial_theta": 0.3,
-        "initial_position": 0,
+        "initial_theta": PI -0.01,
+        "initial_position": -2,
         "omega": 0,
         "speed": 0,
         "damping": 0.5,
@@ -43,9 +43,13 @@ class InvertedPendulumCart(VGroup):
             "background_stroke_width": 3,
             "background_stroke_opacity": 0.5,
         },
+        "rail_style": {
+            "stroke_color": WHITE,
+            "stroke_width": 2,
+        },
         "dashed_line_config": {
             "num_dashes": 25,
-            "stroke_color": WHITE,
+            "stroke_color": BLACK,
             "stroke_width": 2,
         },
         "angle_arc_config": {
@@ -72,6 +76,7 @@ class InvertedPendulumCart(VGroup):
         
         self.create_rod()
         self.create_weight()
+        self.create_rail()
         self.rotating_group = VGroup(self.rod, self.weight)
         self.moving_group = VGroup(self.cart, self.rotating_group)
         self.create_dashed_line()
@@ -100,6 +105,12 @@ class InvertedPendulumCart(VGroup):
         cart.set_style(**self.cart_style)
         cart.move_to(self.get_fixed_point())
         self.add(cart)
+
+    def create_rail(self):
+        rail = self.rail = Line(LEFT, RIGHT)
+        rail.set_length(20)
+        rail.set_style(**self.rail_style)
+        self.add(rail)
 
     def create_ori(self):
         dot = self.dot = Dot(self.get_position())
@@ -310,6 +321,7 @@ class IntroducePendulum(Scene):
             "torque": 0,
             "moment_of_inertia": 1,
             "top_point": 2 * UP,
+            "include_theta_label": False,
 
         },
         "theta_vs_t_axes_config": {
@@ -345,15 +357,16 @@ class IntroducePendulum(Scene):
 
         # self.add(pendulum, frame)
         self.add(pendulum)
+        self.wait()
 
     def label_pendulum(self):
         pendulum = self.pendulum
-        label = pendulum.theta_label
-        rect = SurroundingRectangle(label, buff=0.5 * SMALL_BUFF)
-        rect.add_updater(lambda r: r.move_to(label))
+        # label = pendulum.theta_label
+        # rect = SurroundingRectangle(label, buff=0.5 * SMALL_BUFF)
+        # rect.add_updater(lambda r: r.move_to(label))
 
-        self.play(
-            ShowCreationThenFadeOut(rect),
-        )
+        # self.play(
+        #     ShowCreationThenFadeOut(rect),
+        # )
         self.wait(20)
 

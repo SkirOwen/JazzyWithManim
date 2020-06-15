@@ -134,3 +134,9 @@ class UpdatersExample(Scene):
         self.wait()
 
 # See old_projects folder for many, many more
+class svg(Scene):
+    def construct(self):
+        logo = SVGMobject("Logo_IPSA")
+        logo.scale(3)
+        self.play(DrawBorderThenFill(logo, rate_func=linear))
+        self.wait()

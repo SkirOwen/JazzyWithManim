@@ -3,7 +3,7 @@ from owen.automatics.inverted_pendulum import InvertedPendulumCart
 
 class TitleScreen(Scene):
 	def construct(self):
-		title = TextMobject("Automation")
+		title = TextMobject("Control System")
 		title.scale(3)
 		name = TextMobject("Owen Allemang")
 		spec = TextMobject("ELSS")
@@ -11,7 +11,7 @@ class TitleScreen(Scene):
 		self.play(
 			Write(title),
 			Write(name),
-			Write(spec)
+			Write(spec),
 		)
 		self.wait()
 

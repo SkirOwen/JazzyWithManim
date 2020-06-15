@@ -112,7 +112,7 @@ class LoopSystem(VGroup):
 		line2_out = Arrow(DOWN, UP)
 		line2_out.set_length(2.25)
 		line2_out.move_to(self.get_edge_controller((0.5 + 2.25 / 3), DOWN))
-		line1_out = Line(RIGHT, LEFT)
+		line1_out = self.line_sensor_c = Line(RIGHT, LEFT)
 		line1_out.stroke_width = 6
 		line1_out.set_length(abs(line2_out.get_start() - (self.sensor.get_center() - 0.5 * self.box_width)))
 		line1_out.move_to(line2_out.get_start() +  (0.5 * line1_out.get_length()) * RIGHT)
@@ -140,7 +140,28 @@ class LoopSystem(VGroup):
 		pass
 
 	def add_labels(self):
-		pass
+		plant_label = TextMobject("Plant")
+		error_label = TextMobject("Error E")
+		sensor_label = TextMobject("Sensor")
+		controller_label = TextMobject("Controller")
+		controller_label.scale(0.75)
+		in_label = TextMobject("Set point")
+		out_label = TextMobject("Output")
+		u_label = TextMobject("Control input\\\\U")
+		sensor_out = TextMobject("Sensor Output")
+
+		plant_label.move_to(self.plant.get_center())
+		error_label.move_to(self.link_CC.get_center() + UP)
+		sensor_label.move_to(self.sensor.get_center())
+		controller_label.move_to(self.controller.get_center())
+		in_label.move_to(self.input_line.get_center() + UP)
+		out_label.move_to(self.output_line.get_center() + UP)
+		u_label.move_to(self.link.get_center() + UP)
+		sensor_out.move_to(self.line_sensor_c.get_center() + 0.5* UP)
+		self.add(
+			plant_label, error_label, sensor_label, controller_label,
+			in_label, out_label, u_label, sensor_out,
+		)
 
 	def get_fixed_point(self):
 		return self.fixed_point_tracker.get_location()
@@ -335,6 +356,7 @@ class ClosedLoop(Scene):
 	CONFIG = {
 		"loopsystem_config": {
 			"close": True,
+			"labels_on_box": True,
 		},
 	}
 
@@ -418,10 +440,11 @@ class TransferFunctions(Scene):
 		open_loop_title.to_corner(UP + LEFT)
 		close_loop_title.to_corner(UP + LEFT)
 
-		self.play(Write(open_loop_title))
-		self.wait()
-		self.play(Write(open_loop_tf))
-		self.wait(5)
+		self.play(
+			Write(open_loop_title, run_time=1),
+			LaggedStart(*map(Write, open_loop_tf))
+		)
+		self.wait(2)
 		self.play(
 			Transform(open_loop_title, close_loop_title),
 			Transform(open_loop_tf, close_loop_tf)

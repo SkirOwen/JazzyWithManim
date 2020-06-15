@@ -408,6 +408,11 @@ class SceneFileWriter(object):
             '-an',  # Tells FFMPEG not to expect any audio
             '-loglevel', 'error',
         ]
+        if self.save_as_gif:
+            movie_file_path = self.gif_file_path
+            command += [
+                movie_file_path,
+            ]
         # TODO, the test for a transparent background should not be based on
         # the file extension.
         if self.movie_file_extension == ".mov":
